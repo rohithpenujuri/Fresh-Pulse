@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreshPulse — Dynamic Pricing & Expiry-Based Grocery Platform</title>
+  <meta name="description" content="Shop premium groceries with AI-powered dynamic pricing that drops as expiration dates approach. Save up to 85% and prevent food waste.">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20width=%22100%22%20height=%22100%22><text y=%22.9em%22 font-size=%2290%22>🥬</text></svg>">
+  
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- Tailwind CSS CDN for Utility Styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Bespoke Theme & Glassmorphism Styling -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-[#0b0f17] text-[#f3f4f6]">
+
+  <!-- Canvas Confetti Overlay -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Toast Notifications Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Header / Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="brand-logo" id="brand-logo-btn" title="FreshPulse Home">
+        <div class="logo-icon-box">
+          <i class="fa-solid fa-seedling"></i>
+        </div>
+        <div>
+          <div class="brand-name">
+            Fresh<span class="gradient-text-emerald">Pulse</span>
+          </div>
+          <span class="brand-subtext">Zero-Waste Dynamic Market</span>
+        </div>
+      </a>
+
+      <!-- Location Hub Selector -->
+      <button class="location-selector" id="header-location-pill" title="Change delivery hub">
+        <i class="fa-solid fa-location-dot text-emerald-400"></i>
+        <div class="text-left">
+          <div class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Delivering to</div>
+          <div id="location-display-text" class="font-bold text-white text-xs truncate max-w-[170px]">Downtown Hub (15 min delivery)</div>
+        </div>
+        <i class="fa-solid fa-chevron-down text-[10px] ml-1 text-gray-400"></i>
+      </button>
+
+      <!-- Instant Search Input with Autocomplete -->
+      <div class="search-wrapper">
+        <div class="search-input-box">
+          <i class="fa-solid fa-magnifying-glass search-icon-pos"></i>
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Search fresh produce, sourdough, salmon..." 
+            autocomplete="off"
+            aria-label="Search grocery items"
+            class="bg-transparent border-none outline-none w-full text-white placeholder-gray-500 text-sm"
+          >
+          <button id="search-clear-btn" class="search-clear-btn" title="Clear search">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <!-- Search Autocomplete Dropdown -->
+        <div id="search-autocomplete" class="search-autocomplete-dropdown"></div>
+      </div>
+
+      <!-- Header Actions -->
+      <div class="header-actions">
+        <!-- Interactive Algorithm Explainer Trigger -->
+        <button class="action-icon-btn open-pricing-info-btn" title="How Dynamic Pricing Works">
+          <i class="fa-solid fa-chart-line text-emerald-400"></i>
+        </button>
+
+        <!-- Sound FX Toggle Button -->
+        <button id="sound-toggle-btn" class="action-icon-btn" title="Toggle audio feedback">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+
+        <!-- Live Savings Indicator Pill -->
+        <div class="header-savings-pill hidden sm:flex" title="Your dynamic pricing savings today">
+          <i class="fa-solid fa-bolt text-amber-400"></i>
+          <span>Savings: <strong id="header-savings-counter" class="text-emerald-300 font-mono">₹0.00</strong></span>
+        </div>
+
+        <!-- Floating Cart Trigger Button -->
+        <button id="header-cart-btn" class="cart-btn-main" aria-label="View Shopping Cart">
+          <i class="fa-solid fa-basket-shopping"></i>
+          <span class="hidden md:inline">Cart</span>
+          <span id="cart-count-badge" class="cart-count-badge">0</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main>
+
+    <!-- Hero Banner with Live Impact Counters -->
+    <section class="hero-section">
+      <div class="hero-banner">
+        
+        <!-- Left Hero Content -->
+        <div class="relative z-10">
+          <div class="hero-tag-badge">
+            <span class="pulse-dot-crimson"></span>
+            <span>AI Dynamic Pricing Active &bull; Save Up to 85%</span>
+          </div>
+
+          <h1 class="hero-title">
+            Rescue Delicious Groceries. <br>
+            <span class="gradient-text-emerald">Prices Drop</span> As Expiry Approaches.
+          </h1>
+
+          <p class="hero-subtitle">
+            Every minute an item gets closer to its freshness window, our algorithmic pricing engine slashes the price. Zero food waste, guaranteed peak taste, and massive grocery savings for you.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="#product-grid-section" class="btn-primary">
+              <i class="fa-solid fa-fire text-amber-300"></i>
+              <span>Explore Flash Deals</span>
+            </a>
+            <button class="btn-secondary open-pricing-info-btn">
+              <i class="fa-solid fa-brain text-emerald-400"></i>
+              <span>How Dynamic Pricing Works</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Hero Stats Widget (Anti-Waste Community Tracker) -->
+        <div class="hero-stats-panel relative z-10">
+          <div class="stats-card-inner">
+            <div class="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+              <div class="flex items-center gap-2">
+                <span class="pulse-dot-emerald"></span>
+                <span class="text-xs uppercase font-bold tracking-wider text-emerald-400">Live Community Impact Today</span>
+              </div>
+              <span class="text-[11px] bg-emerald-950/80 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                Verified Zero-Waste
+              </span>
+            </div>
+
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span id="stat-meals" class="stat-value text-white font-mono">3,842</span>
+                <span class="stat-label">Meals Rescued</span>
+              </div>
+              <div class="stat-item">
+                <span id="stat-kg" class="stat-value text-emerald-400 font-mono">1,729 kg</span>
+                <span class="stat-label">Food Waste Diverted</span>
+              </div>
+              <div class="stat-item">
+                <span id="stat-co2" class="stat-value text-cyan-400 font-mono">4,322 kg</span>
+                <span class="stat-label">CO₂ Emissions Prevented</span>
+              </div>
+              <div class="stat-item">
+                <span id="stat-saved" class="stat-value text-amber-400 font-mono">₹12,35,870</span>
+                <span class="stat-label">Shopper Savings</span>
+              </div>
+            </div>
+
+            <!-- Anti-Waste Daily Target Progress -->
+            <div class="waste-progress-wrap">
+              <div class="waste-progress-header">
+                <span class="text-gray-300 text-xs">Daily Zero-Waste Goal</span>
+                <span class="text-emerald-400 font-bold text-xs">82% Achieved</span>
+              </div>
+              <div class="waste-progress-bar-bg">
+                <div class="waste-progress-bar-fill"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Category Filter Bar & Quick Tags -->
+    <section class="filter-section">
+      <div class="filter-container">
+        
+        <!-- Category Navigation Chips -->
+        <div class="category-chips-list" role="tablist">
+          <button class="category-chip active" data-category="All" role="tab">
+            <i class="fa-solid fa-shapes chip-icon"></i>
+            <span>All Groceries</span>
+            <span class="chip-count">16</span>
+          </button>
+          <button class="category-chip" data-category="Produce" role="tab">
+            <i class="fa-solid fa-carrot chip-icon text-orange-400"></i>
+            <span>Produce</span>
+            <span class="chip-count">4</span>
+          </button>
+          <button class="category-chip" data-category="Bakery" role="tab">
+            <i class="fa-solid fa-bread-slice chip-icon text-amber-400"></i>
+            <span>Bakery</span>
+            <span class="chip-count">4</span>
+          </button>
+          <button class="category-chip" data-category="Dairy & Eggs" role="tab">
+            <i class="fa-solid fa-egg chip-icon text-yellow-300"></i>
+            <span>Dairy & Eggs</span>
+            <span class="chip-count">4</span>
+          </button>
+          <button class="category-chip" data-category="Meat & Seafood" role="tab">
+            <i class="fa-solid fa-drumstick-bite chip-icon text-red-400"></i>
+            <span>Meat & Seafood</span>
+            <span class="chip-count">4</span>
+          </button>
+          <button class="category-chip" data-category="Pantry" role="tab">
+            <i class="fa-solid fa-jar chip-icon text-emerald-400"></i>
+            <span>Pantry & Olive Oil</span>
+            <span class="chip-count">2</span>
+          </button>
+        </div>
+
+        <!-- Controls Bar: Quick Tags, Urgency Filter & Sorting -->
+        <div class="controls-bar">
+          <!-- Quick Filter Tags -->
+          <div class="quick-filter-tags">
+            <span class="text-xs text-gray-400 mr-1"><i class="fa-solid fa-filter text-emerald-400"></i> Quick Filter:</span>
+            <button class="quick-tag active" data-tag="all">All Items</button>
+            <button class="quick-tag flash-tag" data-tag="flash">
+              <i class="fa-solid fa-fire text-red-400 mr-1"></i> Flash Deals (&lt;6h)
+            </button>
+            <button class="quick-tag" data-tag="huge">
+              <i class="fa-solid fa-bolt text-amber-400 mr-1"></i> 50%+ OFF
+            </button>
+            <button class="quick-tag" data-tag="under250">
+              <i class="fa-solid fa-tag text-emerald-400 mr-1"></i> Under ₹250
+            </button>
+            <button class="quick-tag" data-tag="organic">
+              <i class="fa-solid fa-leaf text-green-400 mr-1"></i> Organic Only
+            </button>
+          </div>
+
+          <!-- Smart Sorting Dropdown -->
+          <div class="sort-select-wrapper">
+            <label for="sort-select" class="sort-label">Sort By:</label>
+            <select id="sort-select" class="sort-select" aria-label="Sort products">
+              <option value="discount-desc">Highest Discount %</option>
+              <option value="expiry-asc">Nearest Expiry Date (Urgent First)</option>
+              <option value="price-asc">Lowest Price (₹ to ₹₹₹)</option>
+              <option value="price-desc">Highest Price (₹₹₹ to ₹)</option>
+              <option value="popular">Most Popular</option>
+              <option value="name-asc">Product Name (A-Z)</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Product Grid Section -->
+    <section id="product-grid-section" class="products-section">
+      <div class="section-header-row">
+        <div class="section-title-wrap">
+          <h2>
+            <span>Live Discounted Groceries</span>
+            <span id="product-count-badge" class="text-xs font-semibold px-2.5 py-1 bg-emerald-950/70 text-emerald-400 border border-emerald-500/30 rounded-full">
+              16 Deals
+            </span>
+          </h2>
+          <p class="section-subtitle">
+            Countdown clocks tick down continuously. When the timer drops, the algorithm slashes prices further!
+          </p>
+        </div>
+
+        <div class="hidden sm:flex items-center gap-3 text-xs text-gray-400">
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block shadow-[0_0_8px_#ef4444]"></span> &lt;6h Urgent Clearance</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block shadow-[0_0_8px_#f59e0b]"></span> &lt;24h High Discount</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-[0_0_8px_#10b981]"></span> 1-3 Days Fresh Smart Deal</span>
+        </div>
+      </div>
+
+      <!-- Dynamic Product Cards Grid -->
+      <div id="product-grid" class="product-grid">
+        <!-- Injected dynamically via app.js -->
+      </div>
+    </section>
+
+    <!-- Interactive Dynamic Pricing Algorithm Simulator Widget -->
+    <section class="algorithm-banner-section">
+      <div class="algorithm-box">
+        
+        <!-- Left Explainer Text -->
+        <div class="algorithm-text-side">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/30 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-3">
+            <i class="fa-solid fa-microchip"></i> Algorithmic Pricing Engine
+          </div>
+
+          <h3>How FreshPulse Eliminates Food Waste</h3>
+
+          <p>
+            Traditional supermarkets discard over 30% of edible food simply because it reaches its sell-by date. FreshPulse uses an automated decay formula that dynamically discounts food in real time as expiration nears.
+          </p>
+
+          <ul class="algo-feature-bullets">
+            <li>
+              <div class="bullet-icon"><i class="fa-solid fa-check"></i></div>
+              <span><strong>Exponential Urgency Curve:</strong> Discounts increase automatically from 15% to 85% in the final 72 hours.</span>
+            </li>
+            <li>
+              <div class="bullet-icon"><i class="fa-solid fa-check"></i></div>
+              <span><strong>Guaranteed 100% Sell-Through:</strong> Lowers retailer shrinkage costs while shoppers get high-end food at pennies on the dollar.</span>
+            </li>
+            <li>
+              <div class="bullet-icon"><i class="fa-solid fa-check"></i></div>
+              <span><strong>Carbon Offset Tracking:</strong> Every basket directly rescues meals and diverts landfill methane emissions.</span>
+            </li>
+          </ul>
+
+          <button class="btn-secondary open-pricing-info-btn">
+            <i class="fa-solid fa-chart-area text-emerald-400"></i> View Detailed Mathematical Model
+          </button>
+        </div>
+
+        <!-- Right Interactive Simulator Widget -->
+        <div class="simulator-widget">
+          <div class="sim-header">
+            <div class="sim-title">
+              <i class="fa-solid fa-sliders text-emerald-400"></i>
+              <span>Interactive Price Simulator</span>
+            </div>
+            <span class="text-[11px] text-gray-400 font-mono">Live Decay Model</span>
+          </div>
+
+          <!-- Product Picker -->
+          <div class="mb-3">
+            <label for="sim-product-select" class="block text-xs text-gray-400 mb-1">Select Item to Test:</label>
+            <select id="sim-product-select" class="w-full bg-[#111827] border border-white/10 rounded-lg p-2 text-xs text-white outline-none focus:border-emerald-500">
+              <!-- Injected dynamically -->
+            </select>
+          </div>
+
+          <!-- Slider -->
+          <div class="sim-control-group">
+            <div class="sim-label-row">
+              <span>Time Until Expiration:</span>
+              <strong id="sim-slider-val" class="text-emerald-300 font-mono font-bold">12 Hours</strong>
+            </div>
+            <input 
+              type="range" 
+              id="sim-hours-slider" 
+              class="sim-slider" 
+              min="0.5" 
+              max="72" 
+              step="0.5" 
+              value="12"
+              aria-label="Simulate hours until expiration"
+            >
+            <div class="flex justify-between text-[10px] text-gray-500 mt-1">
+              <span>0h (Urgent Clearance)</span>
+              <span>24h</span>
+              <span>48h</span>
+              <span>72h (Fresh Arrival)</span>
+            </div>
+          </div>
+
+          <!-- Live Result Calculation Preview -->
+          <div class="sim-preview-box">
+            <div>
+              <div class="text-[11px] uppercase tracking-wider text-gray-400 font-medium">Simulated Dynamic Price</div>
+              <div id="sim-calc-price" class="sim-calc-price font-mono">₹223.73</div>
+              <div id="sim-calc-savings" class="text-xs text-emerald-400 font-semibold">Save ₹273.44</div>
+            </div>
+
+            <div class="text-right">
+              <span id="sim-calc-discount" class="discount-badge text-sm font-mono px-3 py-1">
+                -55% OFF
+              </span>
+              <div class="text-[10px] text-gray-400 mt-1">
+                AI Automated Threshold
+              </div>
+            </div>
+          </div>
+
+          <!-- Real-time Canvas Decay Graph -->
+          <canvas id="sim-canvas" class="sim-decay-graph-canvas"></canvas>
+          <div class="text-[10px] text-gray-500 text-center mt-1">
+            Visualizing Price (₹) Decay as Hours Approach 0h
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Interactive Shopping Cart Drawer -->
+  <div id="cart-drawer-overlay" class="cart-drawer-overlay" aria-hidden="true">
+    <aside class="cart-drawer" role="dialog" aria-modal="true" aria-label="Shopping Cart Drawer">
+      
+      <!-- Cart Header -->
+      <div class="cart-header">
+        <div class="cart-header-title">
+          <i class="fa-solid fa-basket-shopping text-emerald-400"></i>
+          <span>Rescued Basket</span>
+        </div>
+        <button id="close-cart-btn" class="close-drawer-btn" title="Close cart">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Eco Savings & Anti-Waste Banner -->
+      <div class="cart-eco-banner">
+        <div class="eco-icon-group">
+          <div class="eco-icon-circle">
+            <i class="fa-solid fa-leaf"></i>
+          </div>
+          <div>
+            <div class="eco-text-main">Zero-Waste Impact Tracker</div>
+            <div class="eco-text-sub">Every item rescued directly helps the planet</div>
+          </div>
+        </div>
+        <div class="text-right">
+          <div id="cart-eco-kg" class="text-sm font-bold font-mono text-emerald-300">0.0 kg</div>
+          <div id="cart-eco-co2" class="text-[10px] text-emerald-400 font-medium">0.0 kg CO₂e saved</div>
+        </div>
+      </div>
+
+      <!-- Cart Items List Container -->
+      <div id="cart-items-list" class="cart-items-list">
+        <!-- Rendered dynamically via app.js -->
+      </div>
+
+      <!-- Cart Summary & Checkout Footer -->
+      <div class="cart-footer">
+        
+        <!-- Promo Code Input -->
+        <div class="flex gap-2">
+          <input 
+            type="text" 
+            id="promo-input" 
+            placeholder="Promo: ZEROWASTE or EARTH" 
+            class="flex-1 bg-[#1f2937] border border-white/10 rounded-md px-3 py-1.5 text-xs text-white uppercase outline-none focus:border-emerald-500"
+          >
+          <button id="apply-promo-btn" class="px-3 py-1.5 bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 rounded-md text-xs font-bold transition">
+            Apply
+          </button>
+        </div>
+
+        <div class="cart-calc-row">
+          <span>Subtotal (Dynamic Prices):</span>
+          <span id="cart-subtotal" class="font-mono text-white">₹0.00</span>
+        </div>
+
+        <div class="cart-calc-row savings-highlight">
+          <span>Dynamic AI Savings:</span>
+          <span id="cart-savings" class="font-mono">-₹0.00</span>
+        </div>
+
+        <div class="cart-calc-row">
+          <span>Fast Delivery (15 mins):</span>
+          <span id="cart-delivery" class="font-mono text-white">₹331.00</span>
+        </div>
+
+        <div class="cart-calc-row total-row">
+          <span>Total:</span>
+          <span id="cart-total" class="font-mono text-emerald-300">₹0.00</span>
+        </div>
+
+        <button id="checkout-btn" class="checkout-btn">
+          <i class="fa-solid fa-lock"></i>
+          <span>Complete Zero-Waste Checkout</span>
+        </button>
+
+        <div class="text-center text-[11px] text-gray-400 flex items-center justify-center gap-1">
+          <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+          <span>100% Quality & Cold-Chain Freshness Guaranteed</span>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- Quick View Product Details Modal -->
+  <div id="quickview-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-content-box">
+      <button class="modal-close-corner modal-close-trigger" title="Close modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div id="quickview-content-target">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Algorithmic Pricing Info Modal -->
+  <div id="pricing-info-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-content-box p-6 md:p-8">
+      <button class="modal-close-corner modal-close-trigger" title="Close modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg border border-emerald-500/40">
+          <i class="fa-solid fa-brain"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-white">How FreshPulse Dynamic Pricing Works</h2>
+          <p class="text-xs text-gray-400">Algorithmic waste prevention and consumer surplus optimization</p>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-sm text-gray-300">
+        <p>
+          FreshPulse implements a continuous decay function modeled after financial options pricing and demand-elasticity curves. Rather than writing off unsold stock at a 100% loss, our platform progressively drops prices to meet market clearing demand before expiration.
+        </p>
+
+        <!-- Pricing Schedule Table -->
+        <div class="overflow-x-auto rounded-lg border border-white/10 bg-[#0b0f17]">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-white/5 text-gray-400 uppercase font-semibold">
+              <tr>
+                <th class="p-3">Time to Expiry</th>
+                <th class="p-3">Discount Band</th>
+                <th class="p-3">Urgency Status</th>
+                <th class="p-3">Typical Target</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+              <tr>
+                <td class="p-3 font-mono text-emerald-400">&gt; 48 Hours</td>
+                <td class="p-3 font-bold">10% – 20% OFF</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">Standard Saver</span></td>
+                <td class="p-3 text-gray-400">Pantry & Root Veggies</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono text-emerald-400">24 – 48 Hours</td>
+                <td class="p-3 font-bold">20% – 35% OFF</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">Fresh Arrival</span></td>
+                <td class="p-3 text-gray-400">Dairy & Farm Eggs</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono text-amber-400">12 – 24 Hours</td>
+                <td class="p-3 font-bold">35% – 50% OFF</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800">Approaching Shelf</span></td>
+                <td class="p-3 text-gray-400">Artisan Bakery & Yogurt</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono text-amber-400">6 – 12 Hours</td>
+                <td class="p-3 font-bold">50% – 65% OFF</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800">High Urgency</span></td>
+                <td class="p-3 text-gray-400">Berries, Avocados, Steaks</td>
+              </tr>
+              <tr class="bg-red-950/20">
+                <td class="p-3 font-mono text-red-400">&lt; 6 Hours</td>
+                <td class="p-3 font-bold text-red-400">70% – 85% OFF</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded bg-red-950 text-red-300 border border-red-800 urgent-badge">Flash Clearance</span></td>
+                <td class="p-3 text-gray-400">Fresh Salmon, Croissants</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-4">
+          <h4 class="text-xs uppercase font-bold text-gray-400 mb-2">Algorithmic Price Decay Visualization:</h4>
+          <canvas id="info-modal-canvas" class="w-full h-24 rounded-lg bg-[#0b0f17] border border-white/10"></canvas>
+        </div>
+
+        <div class="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-3 mt-4">
+          <i class="fa-solid fa-leaf text-emerald-400 text-lg mt-0.5"></i>
+          <div>
+            <div class="font-bold text-emerald-300 text-sm">Environmental Commitment</div>
+            <div class="text-xs text-emerald-200/80 leading-relaxed mt-0.5">
+              Food waste accounts for 8-10% of global greenhouse emissions. By incentivizing real-time purchase of near-date groceries, FreshPulse prevents edible nutrition from decomposing in landfills.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delivery Location Hub Selector Modal -->
+  <div id="location-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-content-box p-6 max-w-md">
+      <button class="modal-close-corner modal-close-trigger" title="Close modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h3 class="text-lg font-bold text-white mb-1 flex items-center gap-2">
+        <i class="fa-solid fa-location-crosshairs text-emerald-400"></i>
+        <span>Select Fulfillment Hub</span>
+      </h3>
+      <p class="text-xs text-gray-400 mb-4">Choose your nearest micro-fulfillment center for 15-minute climate-neutral delivery.</p>
+
+      <div class="space-y-2">
+        <button class="location-option-btn w-full p-3 rounded-xl bg-white/5 hover:bg-emerald-950/40 border border-white/10 hover:border-emerald-500/50 text-left flex items-center justify-between transition" data-location="Downtown Hub (15 min delivery)">
+          <div>
+            <div class="font-bold text-white text-sm">Downtown Hub &bull; 15 mins</div>
+            <div class="text-xs text-gray-400">424 Market St &bull; Active Flash Deals: 16</div>
+          </div>
+          <span class="text-xs px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 font-bold">Fastest</span>
+        </button>
+
+        <button class="location-option-btn w-full p-3 rounded-xl bg-white/5 hover:bg-emerald-950/40 border border-white/10 hover:border-emerald-500/50 text-left flex items-center justify-between transition" data-location="West End Eco-Depot (20 min delivery)">
+          <div>
+            <div class="font-bold text-white text-sm">West End Eco-Depot &bull; 20 mins</div>
+            <div class="text-xs text-gray-400">890 Sunset Blvd &bull; Active Flash Deals: 12</div>
+          </div>
+          <span class="text-xs text-gray-400">2.1 mi</span>
+        </button>
+
+        <button class="location-option-btn w-full p-3 rounded-xl bg-white/5 hover:bg-emerald-950/40 border border-white/10 hover:border-emerald-500/50 text-left flex items-center justify-between transition" data-location="Uptown Green Hub (25 min delivery)">
+          <div>
+            <div class="font-bold text-white text-sm">Uptown Green Hub &bull; 25 mins</div>
+            <div class="text-xs text-gray-400">1200 Highland Ave &bull; Active Flash Deals: 14</div>
+          </div>
+          <span class="text-xs text-gray-400">3.8 mi</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout Success & Celebration Modal -->
+  <div id="checkout-success-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-content-box p-8 max-w-lg text-center">
+      <button class="modal-close-corner modal-close-trigger" title="Close modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center text-3xl mb-4 border border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.4)]">
+        <i class="fa-solid fa-check"></i>
+      </div>
+
+      <h2 class="text-2xl font-black text-white mb-1">Zero-Waste Order Confirmed!</h2>
+      <p class="text-sm text-gray-400 mb-6">Your order has been dispatched via electric courier and is arriving in 15–20 minutes.</p>
+
+      <div class="bg-[#0b0f17] border border-white/10 rounded-2xl p-4 text-left mb-6 space-y-3">
+        <div class="flex justify-between text-xs text-gray-300">
+          <span>Items Rescued:</span>
+          <strong id="checkout-items-count" class="text-white font-mono">0</strong>
+        </div>
+        <div class="flex justify-between text-xs text-gray-300">
+          <span>Total Food Waste Prevented:</span>
+          <strong id="checkout-food-rescued" class="text-emerald-400 font-mono">0 kg</strong>
+        </div>
+        <div class="flex justify-between text-xs text-gray-300">
+          <span>Dynamic AI Savings Rescued:</span>
+          <strong id="checkout-savings-amount" class="text-amber-400 font-mono">₹0.00</strong>
+        </div>
+        <div class="flex justify-between text-xs text-gray-300 pt-2 border-t border-white/5">
+          <span>Delivering To:</span>
+          <span id="checkout-destination" class="text-white font-medium truncate max-w-[220px]">Downtown Hub</span>
+        </div>
+      </div>
+
+      <button class="btn-primary w-full justify-center modal-close-trigger">
+        <i class="fa-solid fa-arrow-right"></i> Continue Rescuing Groceries
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer Section -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      
+      <!-- Brand & Mission Statement -->
+      <div class="footer-col">
+        <div class="brand-logo mb-3">
+          <div class="logo-icon-box">
+            <i class="fa-solid fa-seedling"></i>
+          </div>
+          <div>
+            <div class="brand-name">Fresh<span class="gradient-text-emerald">Pulse</span></div>
+            <span class="brand-subtext">Zero-Waste Dynamic Market</span>
+          </div>
+        </div>
+        <p class="text-xs text-gray-400 leading-relaxed mb-4 max-w-sm">
+          FreshPulse is revolutionizing grocery retail with algorithmic shelf-life pricing. We connect smart shoppers with premium near-expiry fresh goods, ending food waste through dynamic economics.
+        </p>
+        <div class="flex items-center gap-3 text-sm text-gray-400">
+          <a href="#" class="hover:text-emerald-400 transition" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#" class="hover:text-emerald-400 transition" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" class="hover:text-emerald-400 transition" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+          <a href="#" class="hover:text-emerald-400 transition" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+        </div>
+      </div>
+
+      <!-- Quick Navigation -->
+      <div class="footer-col">
+        <h4>Marketplace</h4>
+        <ul class="footer-links">
+          <li><a href="#product-grid-section">Flash Deals (&lt;6h)</a></li>
+          <li><a href="#product-grid-section">Organic Produce</a></li>
+          <li><a href="#product-grid-section">Artisan Bakeries</a></li>
+          <li><a href="#product-grid-section">Grass-Fed Meats</a></li>
+          <li><a href="#product-grid-section">Farm Fresh Dairy</a></li>
+        </ul>
+      </div>
+
+      <!-- Sustainability & Model -->
+      <div class="footer-col">
+        <h4>Impact & Science</h4>
+        <ul class="footer-links">
+          <li><a href="javascript:void(0)" class="open-pricing-info-btn">How Dynamic Pricing Works</a></li>
+          <li><a href="javascript:void(0)" class="open-pricing-info-btn">Anti-Waste Mathematical Model</a></li>
+          <li><a href="javascript:void(0)" class="open-pricing-info-btn">Cold Chain Integrity Guarantee</a></li>
+          <li><a href="javascript:void(0)" class="open-pricing-info-btn">Local Farm Partnerships</a></li>
+          <li><a href="javascript:void(0)" class="open-pricing-info-btn">Carbon Neutral Logistics</a></li>
+        </ul>
+      </div>
+
+      <!-- Trust & Delivery Promises -->
+      <div class="footer-col">
+        <h4>Freshness Guarantee</h4>
+        <p class="text-xs text-gray-400 leading-relaxed mb-3">
+          All items are inspected, verified safe, and transported in micro-temperature climate packs. If you are not 100% satisfied, get an instant full refund in one tap.
+        </p>
+        <div class="p-3 rounded-lg bg-emerald-950/40 border border-emerald-500/20 text-xs text-emerald-300">
+          <i class="fa-solid fa-shield-heart mr-1.5"></i> Freshness & Taste 100% Guaranteed
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Copyright Row -->
+    <div class="footer-bottom">
+      <div>
+        &copy; 2026 FreshPulse Inc. &bull; Dynamic Pricing & Expiry-Based Grocery Platform. All rights reserved.
+      </div>
+      <div class="flex gap-4">
+        <a href="#" class="hover:text-emerald-400 transition">Privacy Policy</a>
+        <a href="#" class="hover:text-emerald-400 transition">Terms of Service</a>
+        <a href="#" class="hover:text-emerald-400 transition">Food Safety Standards</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic -->
+  <script src="app.js?v=inr83"></script>
+</body>
+</html>
